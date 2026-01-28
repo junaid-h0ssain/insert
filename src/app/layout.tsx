@@ -7,6 +7,7 @@ import {
   SignedOut,
   UserButton,
 } from '@clerk/nextjs';
+import { dark } from "@clerk/themes";
 import { IBM_Plex_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -33,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider appearance={{ theme: dark }}>
       <html lang="en">
         <body className={`${outfit.variable} ${ibmPlexMono.variable} antialiased`}>
 
