@@ -8,9 +8,15 @@ export const create = mutation({
         
     },
     handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+
+        if (!identity) {
+            throw new Error("Not authenticated");
+        }
+
         await ctx.db.insert("projects", {
             name: args.name,
-            ownerID: "123",
+            ownerID: identity.subject,
         });
     },
 })
@@ -18,6 +24,13 @@ export const create = mutation({
 export const get = query({
     args: {},
     handler: async (ctx) => {
-        return await ctx.db.query("projects").collect();
+        const identity = await ctx.auth.getUserIdentity();
+        
+        if (!identity) {
+            throw new Error("Not authenticated");
+        }
+        return await ctx.db.query("projects")
+        .withIndex("byOwner", (q) => q.eq("ownerID", identity.subject))
+        .collect();
     },
 })
