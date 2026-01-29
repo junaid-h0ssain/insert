@@ -5,11 +5,13 @@ import { google } from "@ai-sdk/google";
 export const demoGenerate = inngest.createFunction(
     { id: "demo-generate" },
     { event: "demo/generate" },
-    async ({ step }) => {
+    async ({ event, step }) => {
+        const { prompt } = event.data;
+        
         await step.run("generate-text", async () => {
             return await generateText({
                 model: google('gemini-3-flash-preview'),
-                prompt: "Write a short poem about the beauty of nature.",
+                prompt,
             });
         });
   },
