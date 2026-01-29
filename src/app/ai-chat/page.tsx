@@ -96,12 +96,16 @@ export default function AiChatPage() {
                                 <SelectValue placeholder="Select model" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="gemini-3-flash-preview">Gemini 3.0 Flash (Preview)</SelectItem>
+                                <SelectItem value="zai-glm-4.7">Cerebras: GLM-4.7</SelectItem>
+                                <SelectItem value="gemini-3-flash-preview">Google: Gemini 3 Flash</SelectItem>
+                                <SelectItem value="moonshotai/kimi-k2-instruct-0905">Groq: Kimi K2 Instruct 0905</SelectItem>
+                                <SelectItem value="deepseek-r1-distill-llama-70b">Groq: DeepSeek R1 70B</SelectItem>
+                                
                             </SelectContent>
                         </Select>
                     </div>
                     <CardDescription>
-                        Powered by Google Gemini via Inngest
+                        Powered by Groq, Cerebras & Google Gemini
                     </CardDescription>
                 </CardHeader>
 
