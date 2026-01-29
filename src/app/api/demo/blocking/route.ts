@@ -1,13 +1,18 @@
 // localhost:3000/src/app/api/demo/blocking/route.ts
 
-import { google } from '@ai-sdk/google';
+import { inngest } from '@/inngest/client';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { generateText } from "ai"
 
+const google = createGoogleGenerativeAI({
+    apiKey: process.env.GEMINI_API_KEY!,
+});
+
 export async function POST() {
-    const response = await generateText({
-        model: google('gemini-3-flash'),
-        prompt: "Write a short poem about the beauty of nature.",
+    await inngest.send({
+        name: "demo/generate",
+        data: {}, 
     }); 
 
-    return Response.json( {response})
+    return Response.json({status: "started"})
 }
