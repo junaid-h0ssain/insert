@@ -11,6 +11,7 @@ import { dark } from "@clerk/themes";
 import { IBM_Plex_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ConvexClientProvider } from "@/components/ConvexClientProvider";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -35,24 +36,26 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider appearance={{ theme: dark }}>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning={true}>
         <body className={`${outfit.variable} ${ibmPlexMono.variable} antialiased`}>
 
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            <header className="flex justify-end items-center p-4 gap-4 h-16">
-              <SignedOut>
-                <SignInButton />
-                <SignUpButton>
-                  <button className="bg-[#6c47ff] text-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer">
-                    Sign Up
-                  </button>
-                </SignUpButton>
-              </SignedOut>
-              <SignedIn>
-                <UserButton />
-              </SignedIn>
-            </header>
-            {children}
+            <ConvexClientProvider>
+              <header className="flex justify-end items-center p-4 gap-4 h-16">
+                <SignedOut>
+                  <SignInButton />
+                  <SignUpButton>
+                    <button className="bg-[#6c47ff] text-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer">
+                      Sign Up
+                    </button>
+                  </SignUpButton>
+                </SignedOut>
+                <SignedIn>
+                  <UserButton />
+                </SignedIn>
+              </header>
+              {children}
+            </ConvexClientProvider>
           </ThemeProvider>
 
         </body>
