@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Thread } from "@/components/assistant-ui/thread"
 import { AssistantRuntimeProvider } from "@assistant-ui/react"
-import { useChatRuntime } from "@assistant-ui/react-ai-sdk"
+import { useChatRuntime, AssistantChatTransport } from "@assistant-ui/react-ai-sdk"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Sparkles } from "lucide-react"
@@ -12,10 +12,12 @@ export default function AiChatPage() {
     const [model, setModel] = useState("gemini-3-flash-preview")
 
     const runtime = useChatRuntime({
-        api: "/api/chat",
-        body: {
-            data: { model }
-        }
+        transport: new AssistantChatTransport({
+            api: "/api/chat",
+            body: {
+                data: { model }
+            }
+        })
     })
 
     return (

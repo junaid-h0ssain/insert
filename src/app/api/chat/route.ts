@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { inngest } from '@/inngest/client';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createCerebras } from '@ai-sdk/cerebras';
