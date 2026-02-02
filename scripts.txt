@@ -1,0 +1,4 @@
+convex dev = bunx convex dev
+
+inngest dev = npx --ignore-scripts=false inngest-cli@latest dev
+
