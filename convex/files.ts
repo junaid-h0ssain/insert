@@ -107,12 +107,8 @@ export const getFolderContents = query({
 
     const project = await ctx.db.get("projects", args.projectId);
 
-    if (!project) {
-      throw new Error("Project not found");
-    }
-
-    if (project.ownerId !== identity.subject) {
-      throw new Error("Unauthorized to access this project");
+    if (!project || project.ownerId !== identity.subject) {
+      return [];
     }
 
     const files = await ctx.db
