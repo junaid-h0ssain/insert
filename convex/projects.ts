@@ -11,7 +11,7 @@ export const create = mutation({
 
         const projectId = await ctx.db.insert("projects", {
             name: args.name,
-            ownerId: identity.subject,
+            ownerID: identity.subject,
             updatedAt: Date.now(),
         });
 
@@ -28,7 +28,7 @@ export const getPartial = query({
 
         return await ctx.db
             .query("projects")
-            .withIndex("by_owner", (q) => q.eq("ownerId", identity.subject))
+            .withIndex("byOwner", (q) => q.eq("ownerID", identity.subject))
             .order("desc")
             .take(args.limit);
     },
@@ -41,7 +41,7 @@ export const get = query({
 
         return await ctx.db
             .query("projects")
-            .withIndex("by_owner", (q) => q.eq("ownerId", identity.subject))
+            .withIndex("byOwner", (q) => q.eq("ownerID", identity.subject))
             .order("desc")
             .collect();
     },
