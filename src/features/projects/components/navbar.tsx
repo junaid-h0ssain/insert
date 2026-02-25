@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { CloudCheckIcon, LoaderIcon } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 import { Poppins } from "next/font/google";
@@ -38,15 +37,8 @@ export const Navbar = ({
 }: {
   projectId: Id<"projects">;
 }) => {
-  const router = useRouter();
   const project = useProject(projectId);
   const renameProject = useRenameProject();
-
-  useEffect(() => {
-    if (project === null) {
-      router.replace("/projects");
-    }
-  }, [project, router]);
 
   const [isRenaming, setIsRenaming] = useState(false);
   const [name, setName] = useState("");

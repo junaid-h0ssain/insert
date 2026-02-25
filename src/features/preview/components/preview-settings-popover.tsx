@@ -1,30 +1,33 @@
 "use client";
 
+import { z } from "zod";
 import { useState } from "react";
-import { Settings2Icon } from "lucide-react";
+import { useForm } from "@tanstack/react-form";
+import { SettingsIcon } from "lucide-react";
 
+import { useUpdateProjectSettings } from "@/features/projects/hooks/use-projects";
+
+import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Field, FieldLabel, FieldDescription } from "@/components/ui/field";
 
-import { Id } from "../../../../convex/_generated/dataModel";
-import { useUpdateProjectSettings } from "../../projects/hooks/use-projects";
+import { Doc, Id } from "../../../../convex/_generated/dataModel";
 
-interface ProjectSettings {
-  installCommand?: string;
-  devCommand?: string;
-}
+const formSchema = z.object({
+  installCommand: z.string(),
+  devCommand: z.string(),
+});
 
 interface PreviewSettingsPopoverProps {
   projectId: Id<"projects">;
-  initialValues?: ProjectSettings;
+  initialValues?: Doc<"projects">["settings"];
   onSave?: () => void;
-}
+};
 
 export const PreviewSettingsPopover = ({
   projectId,
@@ -32,29 +35,41 @@ export const PreviewSettingsPopover = ({
   onSave,
 }: PreviewSettingsPopoverProps) => {
   const [open, setOpen] = useState(false);
-  const [installCommand, setInstallCommand] = useState(
-    initialValues?.installCommand ?? ""
-  );
-  const [devCommand, setDevCommand] = useState(
-    initialValues?.devCommand ?? ""
-  );
-
   const updateSettings = useUpdateProjectSettings();
 
-  const handleSave = () => {
-    updateSettings({
-      id: projectId,
-      settings: {
-        installCommand: installCommand || undefined,
-        devCommand: devCommand || undefined,
-      },
-    });
-    setOpen(false);
-    onSave?.();
+  const form = useForm({
+    defaultValues: {
+      installCommand: initialValues?.installCommand ?? "",
+      devCommand: initialValues?.devCommand ?? "",
+    },
+    validators: {
+      onSubmit: formSchema,
+    },
+    onSubmit: async ({ value }) => {
+      await updateSettings({
+        id: projectId,
+        settings: {
+          installCommand: value.installCommand || undefined,
+          devCommand: value.devCommand || undefined,
+        },
+      });
+      setOpen(false);
+      onSave?.();
+    }
+  });
+
+  const handleOpenChange = (isOpen: boolean) => {
+    if (isOpen) {
+      form.reset({
+        installCommand: initialValues?.installCommand ?? "",
+        devCommand: initialValues?.devCommand ?? "",
+      });
+    }
+    setOpen(isOpen);
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <Button
           size="sm"
@@ -62,40 +77,79 @@ export const PreviewSettingsPopover = ({
           className="h-full rounded-none"
           title="Preview settings"
         >
-          <Settings2Icon className="size-3" />
+          <SettingsIcon className="size-3" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80" align="end">
-        <div className="flex flex-col gap-4">
-          <p className="text-sm font-medium">Preview Settings</p>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="install-command" className="text-xs">
-              Install command
-            </Label>
-            <Input
-              id="install-command"
-              placeholder="npm install"
-              value={installCommand}
-              onChange={(e) => setInstallCommand(e.target.value)}
-              className="h-7 text-xs font-mono"
-            />
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            form.handleSubmit();
+          }}
+        >
+          <div className="space-y-4">
+            <div className="space-y-1">
+              <h4 className="font-medium text-sm">
+                Preview Settings
+              </h4>
+              <p className="text-xs text-muted-foreground">
+                Configure how your project runs in the preview.
+              </p>
+            </div>
+            <form.Field name="installCommand">
+              {(field) => (
+                <Field>
+                  <FieldLabel htmlFor={field.name}>
+                    Install Command
+                  </FieldLabel>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    placeholder="npm install"
+                  />
+                  <FieldDescription>
+                    Command to install dependencies
+                  </FieldDescription>
+                </Field>
+              )}
+            </form.Field>
+            <form.Field name="devCommand">
+              {(field) => (
+                <Field>
+                  <FieldLabel htmlFor={field.name}>Start Command</FieldLabel>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    placeholder="npm run dev"
+                  />
+                  <FieldDescription>
+                    Command to start the development server
+                  </FieldDescription>
+                </Field>
+              )}
+            </form.Field>
+            <form.Subscribe
+              selector={(state) => [state.canSubmit, state.isSubmitting]}
+            >
+              {([canSubmit, isSubmitting]) => (
+                <Button
+                  type="submit"
+                  size="sm"
+                  className="w-full"
+                  disabled={!canSubmit || isSubmitting}
+                >
+                  {isSubmitting ? "Saving..." : "Save Changes"}
+                </Button>
+              )}
+            </form.Subscribe>
           </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="dev-command" className="text-xs">
-              Dev command
-            </Label>
-            <Input
-              id="dev-command"
-              placeholder="npm run dev"
-              value={devCommand}
-              onChange={(e) => setDevCommand(e.target.value)}
-              className="h-7 text-xs font-mono"
-            />
-          </div>
-          <Button size="sm" onClick={handleSave}>
-            Save &amp; Restart
-          </Button>
-        </div>
+        </form>
       </PopoverContent>
     </Popover>
   );

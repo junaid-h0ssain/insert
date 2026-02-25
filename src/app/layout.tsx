@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Outfit } from "next/font/google";
-import "./globals.css";
+import { IBM_Plex_Mono, Inter } from "next/font/google";
+
+import { Toaster } from "@/components/ui/sonner";
 import { Providers } from "@/components/providers";
 
-const outfit = Outfit({
-  variable: "--font-outfit",
+import "allotment/dist/style.css";
+import "./globals.css";
+
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const ibmPlexMono = IBM_Plex_Mono({
-  variable: "--font-ibm-plex-mono",
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
@@ -25,12 +29,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    
-      <html lang="en" suppressHydrationWarning={true}>
-        <body className={`${outfit.variable} ${ibmPlexMono.variable} antialiased`}>
-            <Providers>
-              {children}
-            </Providers>
+      <html lang="en" suppressHydrationWarning>
+        <body
+          className={`${inter.variable} ${plexMono.variable} antialiased`}
+        >
+          <Providers>
+            {children}
+            <Toaster />
+          </Providers>
         </body>
       </html>
   );

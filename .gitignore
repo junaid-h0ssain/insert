@@ -23,9 +23,6 @@
 # misc
 .DS_Store
 *.pem
-.vscode
-.idea
-.kiro
 
 # debug
 npm-debug.log*
@@ -42,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Sentry Config File
+.env.sentry-build-plugin

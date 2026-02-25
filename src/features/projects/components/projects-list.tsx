@@ -65,7 +65,7 @@ const ContinueCard = ({
             <ArrowRightIcon className="size-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
           </div>
           <span className="text-xs text-muted-foreground">
-            {formatTimestamp(data.updatedAt ?? data._creationTime)}
+            {formatTimestamp(data.updatedAt)}
           </span>
         </Link>
       </Button>
@@ -88,7 +88,7 @@ const ProjectItem = ({
         <span className="truncate">{data.name}</span>
       </div>
       <span className="text-xs text-muted-foreground group-hover:text-foreground/60 transition-colors">
-        {formatTimestamp(data.updatedAt ?? data._creationTime)}
+        {formatTimestamp(data.updatedAt)}
       </span>
     </Link>
   );

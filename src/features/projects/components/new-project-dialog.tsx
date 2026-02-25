@@ -1,9 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ky from "ky";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useMutation } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import {
+  adjectives,
+  animals,
+  colors,
+  uniqueNamesGenerator,
+} from "unique-names-generator";
 
 import {
   Dialog,
@@ -37,6 +45,27 @@ export const NewProjectDialog = ({
   const router = useRouter();
   const [input, setInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const createProject = useMutation(api.projects.create);
+
+  const handleCreateBlank = async () => {
+    setIsSubmitting(true);
+    try {
+      const projectName = uniqueNamesGenerator({
+        dictionaries: [adjectives, animals, colors],
+        separator: "-",
+        length: 3,
+      });
+      const projectId = await createProject({ name: projectName });
+      toast.success("Project created");
+      onOpenChange(false);
+      setInput("");
+      router.push(`/projects/${projectId}`);
+    } catch {
+      toast.error("Unable to create project");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleSubmit = async (message: PromptInputMessage) => {
     if (!message.text) return;
@@ -67,7 +96,7 @@ export const NewProjectDialog = ({
         showCloseButton={false}
         className="sm:max-w-lg p-0"
       >
-        <DialogHeader className="sr-only">
+        <DialogHeader className="hidden">
           <DialogTitle>What do you want to build?</DialogTitle>
           <DialogDescription>
             Describe your project and AI will help you create it.
@@ -87,6 +116,15 @@ export const NewProjectDialog = ({
              <PromptInputSubmit disabled={!input || isSubmitting} />
           </PromptInputFooter>
         </PromptInput>
+        <div className="px-4 pb-3 flex justify-center">
+          <button
+            onClick={handleCreateBlank}
+            disabled={isSubmitting}
+            className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors disabled:opacity-50"
+          >
+            Create blank project
+          </button>
+        </div>
       </DialogContent>
     </Dialog>
   );
