@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently --names \"next,convex,inngest\" \"next dev\" \"npx convex dev\" \"npx --ignore-scripts=false inngest-cli@latest dev\"",
+    "dev": "concurrently --names \"next,convex,inngest\" \"next dev\" \"npx convex dev\" \"NPM_CONFIG_CACHE=$(mktemp -d) npx --ignore-scripts=false inngest-cli@latest dev\"",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
