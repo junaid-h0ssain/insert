@@ -5,15 +5,29 @@ import { v } from "convex/values";
 export default defineSchema({
     projects: defineTable({
         name: v.string(),
-        // description: v.string().isOptional(),
-        // createdAt: v.date(),
         ownerID: v.string(),
+        updatedAt: v.number(),
         importStatus: v.optional(
             v.union(
                 v.literal("in_progress"),
                 v.literal("completed"),
                 v.literal("failed"),
-            )
+            ),
+        ),
+        exportStatus: v.optional(
+            v.union(
+                v.literal("exporting"),
+                v.literal("completed"),
+                v.literal("failed"),
+                v.literal("cancelled"),
+            ),
+        ),
+        exportRepoUrl: v.optional(v.string()),
+        settings: v.optional(
+            v.object({
+                installCommand: v.optional(v.string()),
+                devCommand: v.optional(v.string()),
+            })
         ),
     }).index("byOwner", ["ownerID"]),
 });
