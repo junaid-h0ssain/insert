@@ -46,3 +46,62 @@ export const get = query({
             .collect();
     },
 });
+
+export const getById = query({
+    args: {
+        id: v.id("projects"),
+    },
+    handler: async (ctx, args) => {
+        const identity = await verifyAuth(ctx);
+        const project = await ctx.db.get(args.id);
+
+        if (!project || project.ownerID !== identity.subject) {
+            return null;
+        }
+
+        return project;
+    },
+});
+
+export const rename = mutation({
+    args: {
+        id: v.id("projects"),
+        name: v.string(),
+    },
+    handler: async (ctx, args) => {
+        const identity = await verifyAuth(ctx);
+        const project = await ctx.db.get(args.id);
+
+        if (!project || project.ownerID !== identity.subject) {
+            throw new Error("Project not found");
+        }
+
+        await ctx.db.patch(args.id, {
+            name: args.name,
+            updatedAt: Date.now(),
+        });
+    },
+});
+
+export const updateSettings = mutation({
+    args: {
+        id: v.id("projects"),
+        settings: v.object({
+            installCommand: v.optional(v.string()),
+            devCommand: v.optional(v.string()),
+        }),
+    },
+    handler: async (ctx, args) => {
+        const identity = await verifyAuth(ctx);
+        const project = await ctx.db.get(args.id);
+
+        if (!project || project.ownerID !== identity.subject) {
+            throw new Error("Project not found");
+        }
+
+        await ctx.db.patch(args.id, {
+            settings: args.settings,
+            updatedAt: Date.now(),
+        });
+    },
+});
